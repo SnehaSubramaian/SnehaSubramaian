@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>I’m sorry ♥</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,400;1,500&family=Pinyon+Script&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --night:#1a0814;
+    --wine:#4a1230;
+    --rose:#e58fa8;
+    --petal:#ffc9d6;
+    --gold:#f0cf9e;
+    --ivory:#fff3ee;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  body{
+    background:
+      radial-gradient(ellipse at 50% 20%, #5e1a3d 0%, transparent 60%),
+      radial-gradient(ellipse at 50% 100%, #3a0e27 0%, transparent 55%),
+      var(--night);
+    color:var(--ivory);
+    font-family:"Cormorant Garamond",Georgia,"Times New Roman",serif;
+    display:flex;align-items:center;justify-content:center;
+    overflow:hidden;
+    padding:20px;
+  }
+
+  /* falling petals */
+  .petal{
+    position:fixed;top:-40px;pointer-events:none;
+    color:var(--petal);opacity:.0;
+    animation:fall linear infinite;
+    z-index:0;
+  }
+  @keyframes fall{
+    0%{transform:translateY(-5vh) rotate(0deg);opacity:0}
+    10%{opacity:.7}
+    90%{opacity:.5}
+    100%{transform:translateY(110vh) translateX(40px) rotate(360deg);opacity:0}
+  }
+
+  .letter{
+    position:relative;z-index:1;
+    width:min(560px,100%);
+    padding:clamp(28px,6vw,56px) clamp(22px,6vw,52px);
+    text-align:center;
+    border:1px solid rgba(240,207,158,.45);
+    outline:1px solid rgba(240,207,158,.18);
+    outline-offset:7px;
+    background:linear-gradient(160deg,rgba(74,18,48,.72),rgba(26,8,20,.82));
+    backdrop-filter:blur(6px);
+    border-radius:4px;
+    box-shadow:0 30px 80px rgba(0,0,0,.55);
+  }
+  .heart-seal{font-size:34px;color:var(--rose);margin-bottom:6px;display:inline-block;animation:beat 1.8s ease-in-out infinite}
+  @keyframes beat{0%,100%{transform:scale(1)}15%{transform:scale(1.18)}30%{transform:scale(1)}45%{transform:scale(1.12)}}
+
+  h1{
+    font-family:"Pinyon Script","Snell Roundhand",cursive;
+    font-weight:400;
+    font-size:clamp(44px,11vw,72px);
+    line-height:1.05;margin:0 0 6px;color:var(--petal);
+  }
+  .to{font-style:italic;font-size:clamp(20px,4.5vw,24px);color:var(--gold);margin:0 0 22px}
+  .msg{font-size:clamp(19px,4.2vw,22px);line-height:1.6;margin:0 0 14px;font-style:italic}
+  .promises{list-style:none;padding:0;margin:20px auto 26px;max-width:420px;font-size:clamp(18px,4vw,21px);line-height:1.5}
+  .promises li{margin:8px 0}
+  .promises li::before{content:"♥ ";color:var(--rose);font-size:.8em}
+  .ask{font-size:clamp(24px,5.5vw,30px);margin:6px 0 22px;color:var(--gold);font-weight:500}
+  .sign{font-family:"Pinyon Script",cursive;font-size:32px;color:var(--petal);margin:20px 0 0}
+
+  .buttons{display:flex;gap:18px;justify-content:center;align-items:center;min-height:64px;flex-wrap:wrap}
+  button{
+    font-family:inherit;font-size:20px;font-weight:500;
+    padding:13px 28px;border-radius:999px;cursor:pointer;
+    border:1px solid var(--gold);transition:transform .25s ease, background .25s;
+  }
+  button:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+  #yes{background:linear-gradient(135deg,#f3a7bb,#d9607f);color:#3a0e27;border-color:transparent;box-shadow:0 8px 26px rgba(217,96,127,.45)}
+  #yes:hover{transform:scale(1.06)}
+  #no{background:transparent;color:var(--ivory);z-index:5;transition:left .35s cubic-bezier(.3,1.4,.5,1), top .35s cubic-bezier(.3,1.4,.5,1)}
+
+  .hint{min-height:1.5em;margin-top:16px;font-size:18px;font-style:italic;color:var(--rose)}
+
+  /* after she says yes */
+  #thanks{display:none}
+  .done #ask-view{display:none}
+  .done #thanks{display:block;animation:rise .9s ease both}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  .burst{position:fixed;pointer-events:none;z-index:10;font-size:26px;color:var(--rose);animation:pop 1.8s ease-out forwards}
+  @keyframes pop{to{transform:translate(var(--dx),var(--dy)) scale(1.4);opacity:0}}
+
+  @media (prefers-reduced-motion:reduce){
+    .petal,.heart-seal{animation:none}
+    #no{transition:none}
+  }
+</style>
+</head>
+<body>
+
+<main class="letter" id="card">
+  <div id="ask-view">
+    <div class="heart-seal" aria-hidden="true">♥</div>
+    <h1>I’m sorry</h1>
+    <p class="to" id="to"></p>
+
+    <p class="msg" id="msg1"></p>
+    <p class="msg" id="msg2"></p>
+
+    <ul class="promises" id="promises"></ul>
+
+    <p class="ask">Will you forgive me?</p>
+
+    <div class="buttons" id="buttons">
+      <button id="yes" type="button">Yes, I forgive you</button>
+      <button id="no" type="button">No</button>
+    </div>
+    <p class="hint" id="hint" aria-live="polite"></p>
+  </div>
+
+  <div id="thanks">
+    <div class="heart-seal" aria-hidden="true">♥</div>
+    <h1>Thank you</h1>
+    <p class="msg" id="thanksMsg"></p>
+    <p class="sign" id="sign"></p>
+  </div>
+</main>
+
+<script>
+/* ===== EDIT THIS PART ===== */
+const CONFIG = {
+  herName: "My love",            // e.g. "Priya"
+  yourName: "Your name",         // shown at the end
+  message1: "I hurt you, and I hate that I did. You deserve so much better than my mistake.",
+  message2: "I’m not saying this to make it go away. I’m saying it because I love you and I want to do better.",
+  promises: [
+    "I will listen before I react.",
+    "I will own my mistakes, not hide behind them.",
+    "I will keep choosing you, every single day."
+  ],
+  thanks: "You just made my whole world softer. I promise to hold your heart with more care, always.",
+  noLabels: ["No", "Are you sure?", "Think again…", "Please?", "Too slow 😉", "Nice try, love", "Just say yes ♥", "I’ll wait forever", "You can’t catch me", "Okay, you win?"],
+  hints: ["", "Hmm, the button moved…", "It really doesn’t want to be clicked.", "Your heart already knows the answer.", "I’ll keep being sorry all day.", "The other button is getting bigger, you know.", "Pretty please, with a kiss on top?"]
+};
+/* ========================== */
+
+const $ = id => document.getElementById(id);
+const yes = $("yes"), no = $("no"), hint = $("hint");
+
+$("to").textContent = "to " + CONFIG.herName;
+$("msg1").textContent = CONFIG.message1;
+$("msg2").textContent = CONFIG.message2;
+$("thanksMsg").textContent = CONFIG.thanks;
+$("sign").textContent = "Forever yours, " + CONFIG.yourName;
+CONFIG.promises.forEach(p => { const li = document.createElement("li"); li.textContent = p; $("promises").appendChild(li); });
+document.title = "I’m sorry, " + CONFIG.herName + " ♥";
+
+/* falling petals */
+if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  for (let i = 0; i < 18; i++) {
+    const p = document.createElement("span");
+    p.className = "petal";
+    p.textContent = Math.random() > .5 ? "♥" : "❀";
+    p.style.left = Math.random() * 100 + "vw";
+    p.style.fontSize = 12 + Math.random() * 18 + "px";
+    p.style.animationDuration = 9 + Math.random() * 10 + "s";
+    p.style.animationDelay = -Math.random() * 15 + "s";
+    document.body.appendChild(p);
+  }
+}
+
+/* the runaway button */
+let tries = 0, lastMove = 0;
+
+function overlaps(a, b) {
+  return !(a.right < b.left || a.left > b.right || a.bottom < b.top || a.top > b.bottom);
+}
+
+function dodge(e) {
+  if (e && e.cancelable) e.preventDefault();
+  const now = Date.now();
+  if (now - lastMove < 180) return;       // avoid jittering
+  lastMove = now;
+  tries++;
+
+  no.style.position = "fixed";
+  const w = no.offsetWidth, h = no.offsetHeight, pad = 14;
+  const yesRect = yes.getBoundingClientRect();
+  let x, y, tryN = 0;
+  do {
+    x = pad + Math.random() * Math.max(1, innerWidth - w - pad * 2);
+    y = pad + Math.random() * Math.max(1, innerHeight - h - pad * 2);
+    tryN++;
+  } while (tryN < 25 && overlaps({left:x-20, right:x+w+20, top:y-20, bottom:y+h+20}, yesRect));
+  no.style.left = x + "px";
+  no.style.top = y + "px";
+
+  no.textContent = CONFIG.noLabels[Math.min(tries, CONFIG.noLabels.length - 1)];
+  hint.textContent = CONFIG.hints[Math.min(Math.floor(tries / 2), CONFIG.hints.length - 1)];
+  yes.style.transform = "scale(" + (1 + Math.min(tries, 12) * 0.07) + ")";
+}
+
+["pointerenter", "pointerdown", "touchstart", "click", "focus"].forEach(ev =>
+  no.addEventListener(ev, dodge, { passive: false })
+);
+
+/* dodge before the cursor even touches it */
+document.addEventListener("pointermove", e => {
+  if (e.pointerType === "touch") return;
+  const r = no.getBoundingClientRect();
+  const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+  if (Math.hypot(e.clientX - cx, e.clientY - cy) < 90) dodge();
+});
+
+/* she said yes */
+yes.addEventListener("click", () => {
+  no.style.display = "none";
+  $("card").classList.add("done");
+  for (let i = 0; i < 40; i++) {
+    const h = document.createElement("span");
+    h.className = "burst";
+    h.textContent = ["♥", "❤", "💗", "💖"][i % 4];
+    h.style.left = innerWidth / 2 + "px";
+    h.style.top = innerHeight / 2 + "px";
+    h.style.setProperty("--dx", (Math.random() - .5) * innerWidth + "px");
+    h.style.setProperty("--dy", (Math.random() - .5) * innerHeight + "px");
+    h.style.animationDelay = Math.random() * .4 + "s";
+    document.body.appendChild(h);
+    setTimeout(() => h.remove(), 2600);
+  }
+});
+</script>
+</body>
+</html>
